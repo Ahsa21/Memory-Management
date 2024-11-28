@@ -5,7 +5,7 @@
 #include "memory_manager.h"
 
 typedef struct MemoryBlock {
-    struct MemoryBlock *pnt; //pointer to part of memorybool in the memory
+    void * pnt; //pointer to part of memorypool in the memory
     struct MemoryBlock * Next; // pointer ton the next MemoryBlock
     int size; // size of the alocated memory
     bool free;  // if a piece of memory is free to alocate of not 
