@@ -13,7 +13,7 @@ typedef struct MemoryBlock {
 
 
 void* memory_pool = NULL;
-MemoryBlock* Block = NULL;
+MemoryBlock* Block_pool = NULL; //name changed
 
 
 
@@ -22,17 +22,17 @@ MemoryBlock* Block = NULL;
 void mem_init(size_t size) {
 
     memory_pool = malloc(size);
-    Block = malloc(sizeof(MemoryBlock));
+    Block_pool = malloc(sizeof(MemoryBlock));
 
-    if (memory_pool == NULL || Block == NULL) {
+    if (memory_pool == NULL || Block_pool == NULL) {
         printf("memory_pool or Block was not allocated");
         return;
     }
 
-    Block -> pnt = memory_pool;
-    Block -> Next = NULL;
-    Block -> size = size;
-    Block -> free = true;
+    Block_pool -> pnt = memory_pool;
+    Block_pool -> Next = NULL;
+    Block_pool -> size = size;
+    Block_pool -> free = true;
 
 
 }
@@ -40,4 +40,20 @@ void mem_init(size_t size) {
 
 
 
+void* mem_alloc(size_t size) {
+    MemoryBlock* current = Block_pool;
 
+
+    while (current !=NULL) {
+        
+        if (current -> free = true && current -> size >= size) {
+
+            
+
+        } else {
+            current = current -> Next;
+        }
+
+    }
+
+}
