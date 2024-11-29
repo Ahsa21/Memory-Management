@@ -44,16 +44,32 @@ void* mem_alloc(size_t size) {
     MemoryBlock* current = Block_pool;
 
 
-    while (current !=NULL) {
+    while (current != NULL) {
         
         if (current -> free = true && current -> size >= size) {
 
-            
+            MemoryBlock* New_block = malloc(sizeof(MemoryBlock));
+
+            New_block -> pnt = current -> pnt + size;
+
+            New_block -> Next = NULL;
+            current -> Next = New_block;
+
+            New_block -> size = current -> size - size;
+            current -> size = size;
+
+            New_block -> free = true;
+            current -> free = false;
+
 
         } else {
             current = current -> Next;
         }
 
+        return current -> pnt;
+
     }
+
+    return NULL;
 
 }
