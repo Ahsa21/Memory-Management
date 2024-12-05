@@ -106,14 +106,30 @@ void mem_free(void* block) {
 }
 
 
+void* mem_resize(void* block, size_t size) {
+    if (block ==NULL) {
+        printf("It is not possible to resize a block that is NULL");
 
+    } else {
+        MemoryBlock* current = Block_pool;
 
-            while(Next_Block !=NULL) {
-                if (Next_Block->free) {
-                current -> size += Next_Block -> size;
-                current -> Next = Next_Block -> Next;
-                return;
+        while(current != NULL) {
+            if(current->pnt != block) {
+                current = current ->Next;
 
+            }
+            
+            else {
+
+                if (current ->size >= size) {
+                    printf("No need to resize");
+                    return block;
                 } else {
-
+                    void* new_pointer = mem_alloc(size);
+                    memcpy(new_pointer, block, current ->size);
+                    return new_pointer;
                 }
+            }
+        }
+    }
+}
