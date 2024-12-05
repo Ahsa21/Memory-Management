@@ -73,3 +73,47 @@ void* mem_alloc(size_t size) {
     return NULL;
 
 }
+
+
+
+void mem_free(void* block) {
+    if (!block) {
+        printf("You want to free a null pointer");
+        return;
+    }
+
+    MemoryBlock * current = Block_pool;
+
+    while (current != NULL) 
+    {
+        if (current ->pnt == block) {
+            current ->free = true;
+
+        MemoryBlock* Next_Block = current ->Next;
+        if (current ->free && Next_Block !=NULL && Next_Block ->free) {
+            current -> size += Next_Block -> size;
+            current -> Next = Next_Block -> Next;
+            }
+
+        } else {
+            current = current ->Next;
+        }
+    }
+
+    return;
+    
+    
+}
+
+
+
+
+            while(Next_Block !=NULL) {
+                if (Next_Block->free) {
+                current -> size += Next_Block -> size;
+                current -> Next = Next_Block -> Next;
+                return;
+
+                } else {
+
+                }
