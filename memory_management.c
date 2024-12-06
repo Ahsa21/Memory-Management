@@ -133,3 +133,21 @@ void* mem_resize(void* block, size_t size) {
         }
     }
 }
+
+
+
+
+void mem_deinit() {
+    free(memory_pool);
+    memory_pool = NULL;
+
+    MemoryBlock*  current = Block_pool;
+    while (current == NULL) {
+        MemoryBlock* Next_Block = current;
+         free(current);
+         MemoryBlock* current = Next_Block ->Next;
+    }
+
+    Block_pool = NULL;
+
+}
