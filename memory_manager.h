@@ -1,3 +1,6 @@
+#ifndef MEMORY_MANAGER_H
+#define MEMORY_MANAGER_H
+
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -14,3 +17,5 @@ void* mem_resize(void* block, size_t size);
 
 void mem_deinit();
 
+
+#endif

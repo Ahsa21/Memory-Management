@@ -25,7 +25,7 @@ void mem_init(size_t size) {
     Block_pool = malloc(sizeof(MemoryBlock));
 
     if (memory_pool == NULL || Block_pool == NULL) {
-        printf("memory_pool or Block was not allocated");
+        printf("memory_pool or Block was not allocated\n");
         return;
     }
 
@@ -33,6 +33,7 @@ void mem_init(size_t size) {
     Block_pool -> Next = NULL;
     Block_pool -> size = size;
     Block_pool -> free = true;
+
 
 
 }
@@ -46,13 +47,18 @@ void* mem_alloc(size_t size) {
 
     while (current != NULL) {
         
-        if (current -> free = true && current -> size >= size) {
+        if (current -> free == true && current -> size >= size) {
 
             MemoryBlock* New_block = malloc(sizeof(MemoryBlock));
 
+            if (New_block == NULL) {
+                printf("No new block was allocated!\n");
+                return NULL;
+            }
+
             New_block -> pnt = current -> pnt + size;
 
-            New_block -> Next = NULL;
+            New_block -> Next = current -> Next;
             current -> Next = New_block;
 
             New_block -> size = current -> size - size;
@@ -60,13 +66,12 @@ void* mem_alloc(size_t size) {
 
             New_block -> free = true;
             current -> free = false;
+            return current -> pnt;
 
 
         } else {
             current = current -> Next;
         }
-
-        return current -> pnt;
 
     }
 
@@ -78,7 +83,7 @@ void* mem_alloc(size_t size) {
 
 void mem_free(void* block) {
     if (!block) {
-        printf("You want to free a null pointer");
+        printf("You want to free a null pointer\n");
         return;
     }
 
@@ -89,18 +94,18 @@ void mem_free(void* block) {
         if (current ->pnt == block) {
             current ->free = true;
 
-        MemoryBlock* Next_Block = current ->Next;
-        if (current ->free && Next_Block !=NULL && Next_Block ->free) {
-            current -> size += Next_Block -> size;
-            current -> Next = Next_Block -> Next;
-            }
+            MemoryBlock* Next_Block = current ->Next;
+            if (current ->free && Next_Block !=NULL && Next_Block ->free) {
+                current -> size += Next_Block -> size;
+                current -> Next = Next_Block -> Next;
+                free(Next_Block);
+                }
+                return;
 
         } else {
             current = current ->Next;
         }
     }
-
-    return;
     
     
 }
@@ -108,7 +113,7 @@ void mem_free(void* block) {
 
 void* mem_resize(void* block, size_t size) {
     if (block ==NULL) {
-        printf("It is not possible to resize a block that is NULL");
+        printf("It is not possible to resize a block that is NULL\n");
 
     } else {
         MemoryBlock* current = Block_pool;
@@ -122,11 +127,12 @@ void* mem_resize(void* block, size_t size) {
             else {
 
                 if (current ->size >= size) {
-                    printf("No need to resize");
+                    printf("No need to resize\n");
                     return block;
                 } else {
                     void* new_pointer = mem_alloc(size);
                     memcpy(new_pointer, block, current ->size);
+                    mem_free(block);
                     return new_pointer;
                 }
             }
@@ -142,10 +148,10 @@ void mem_deinit() {
     memory_pool = NULL;
 
     MemoryBlock*  current = Block_pool;
-    while (current == NULL) {
-        MemoryBlock* Next_Block = current;
-         free(current);
-         MemoryBlock* current = Next_Block ->Next;
+    while (current != NULL) {
+        MemoryBlock *Next_Block = current->Next;
+        free(current);
+        current = Next_Block;
     }
 
     Block_pool = NULL;

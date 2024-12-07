@@ -14,6 +14,7 @@
 
 void test_init(int memory)
 {
+    printf("ffff");
   printf_yellow("  Testing mem_init (%d) ---> ", memory);
     mem_init(memory);               // Initialize with 1KB of memory
     void *block = mem_alloc(100); // Try allocating to check if init was successful
@@ -459,6 +460,7 @@ int main(int argc, char *argv[])
         break;
     case 0:
         // Running all tests
+
         printf("Testing Basic Operations:\n");
         test_init(1024);
         test_alloc_and_free();
