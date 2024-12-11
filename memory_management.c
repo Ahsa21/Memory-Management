@@ -21,12 +21,14 @@ pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 
 
 void mem_init(size_t size) {
+    pthread_mutex_lock(&lock);
 
     memory_pool = malloc(size);
     Block_pool = malloc(sizeof(MemoryBlock));
 
     if (memory_pool == NULL || Block_pool == NULL) {
         printf("memory_pool or Block was not allocated\n");
+        pthread_mutex_unlock(&lock);
         return;
     }
 
@@ -34,6 +36,8 @@ void mem_init(size_t size) {
     Block_pool -> Next = NULL;
     Block_pool -> size = size;
     Block_pool -> free = true;
+
+    pthread_mutex_unlock(&lock);
 
 
 
@@ -46,8 +50,6 @@ void* mem_alloc(size_t size) {
     pthread_mutex_lock(&lock);
     MemoryBlock* current = Block_pool;
 
-
-
     while (current != NULL) {
         
         if (current -> free == true && current -> size >= size) {
@@ -55,8 +57,8 @@ void* mem_alloc(size_t size) {
             MemoryBlock* New_block = malloc(sizeof(MemoryBlock));
 
             if (New_block == NULL) {
-                printf("No new block was allocated!\n");
                 pthread_mutex_unlock(&lock);
+                printf("No new block was allocated!\n");
                 return NULL;
             }
 
@@ -88,6 +90,7 @@ void* mem_alloc(size_t size) {
 
 
 void mem_free(void* block) {
+    
     if (!block) {
         printf("You want to free a null pointer\n");
         return;
@@ -161,9 +164,9 @@ void* mem_resize(void* block, size_t size) {
 
 void mem_deinit() {
     free(memory_pool);
+    pthread_mutex_lock(&lock);
     memory_pool = NULL;
 
-    pthread_mutex_lock(&lock);
     MemoryBlock*  current = Block_pool;
     while (current != NULL) {
         MemoryBlock *Next_Block = current->Next;

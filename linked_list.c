@@ -226,4 +226,5 @@ void list_cleanup(Node** head) {
         temp = next;
     }
     *head = NULL; // Set head to NULL after cleanup
+    mem_deinit();
 }
