@@ -6,11 +6,9 @@ LIB_NAME = libmemory_manager.so
 # Source and Object Files
 SRC = memory_manager.c
 OBJ = $(SRC:.c=.o)
-LINKED_LIST_SRC = linked_list.c
-LINKED_LIST_OBJ = $(LINKED_LIST_SRC:.c=.o)
 
 # Default target
-all: clean gitinfo build check
+all: gitinfo mmanager list test_mmanager test_list
 
 # Rule to create the dynamic library
 $(LIB_NAME): $(OBJ)
@@ -21,43 +19,35 @@ $(LIB_NAME): $(OBJ)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 gitinfo:
-	@echo "const char *git_date = \"$(shell date)\";" > gitdata.h
-	@echo "const char *git_sha = \"$(shell git rev-parse HEAD)\";" >> gitdata.h
-	@echo "Git information added."
+	@echo "const char *git_date = \"$(GIT_DATE)\";" > gitdata.h
+	@echo "const char *git_sha = \"$(GIT_COMMIT)\";" >> gitdata.h
+
 
 # Build the memory manager
 mmanager: $(LIB_NAME)
 
 # Build the linked list
-list: $(LINKED_LIST_OBJ)
+list: linked_list.o
 
-# Build the test binaries
-test_mmanager: $(LIB_NAME)
-	$(CC) $(CFLAGS) -o executable_memory_manager test_memory_manager.c memory_manager.c
+# Test target to run the memory manager test program
+test_mmanager: $(LIB_NAME) 
+	$(CC) $(CFLAGS) -o test_memory_manager test_memory_manager.c -L. -lmemory_manager
 
-test_list: $(LIB_NAME) $(LINKED_LIST_OBJ)
-	$(CC) $(CFLAGS) -o executable_linked_list test_linked_list.c $(LINKED_LIST_SRC) memory_manager.c
+# Test target to run the linked list test program
+test_list: $(LIB_NAME) linked_list.o
+	$(CC) $(CFLAGS) -o test_linked_list linked_list.c test_linked_list.c -L. -lmemory_manager
 
-build: mmanager list test_mmanager test_list
-	@echo "Build complete."
+#run tests
+run_tests:n run_test_mmanager run_test_list
 
-# Check for the existence of necessary files
-check:
-	@if [ ! -f executable_linked_list ]; then \
-		echo " Missing; test_linked_list binary, can't continue."; \
-		exit 1; \
-	fi
-
-# Run tests
-run_tests: run_test_mmanager run_test_list
-
+# run test cases for the memory manager
 run_test_mmanager:
-	./executable_memory_manager
+	./test_memory_manager -shared
 
+# run test cases for the linked list
 run_test_list:
-	./executable_linked_list
+	./test_linked_list -shared
 
 # Clean target to clean up build files
 clean:
-	rm -f $(OBJ) $(LINKED_LIST_OBJ) $(LIB_NAME) executable_memory_manager executable_linked_list
-	@echo "Cleaned up all build files."
+	rm -f $(OBJ) $(LIB_NAME) test_memory_manager test_linked_list linked_list.o
